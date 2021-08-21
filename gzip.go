@@ -74,6 +74,8 @@ func Gziper(options ...Options) flamego.Handler {
 		gzw := gzipResponseWriter{gz, ctx.ResponseWriter()}
 		ctx.MapTo(gzw, (*http.ResponseWriter)(nil))
 
+		ctx.Next()
+
 		// delete content length after we know we have been written to
 		gzw.Header().Del("Content-Length")
 	}
