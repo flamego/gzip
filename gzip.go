@@ -54,7 +54,7 @@ func prepareOptions(options []Options) Options {
 func Gzip(options ...Options) flamego.Handler {
 	opt := prepareOptions(options)
 
-	return func(ctx flamego.Context) {
+	return flamego.ContextInvoker(func(ctx flamego.Context) {
 		if !strings.Contains(ctx.Request().Header.Get(_HEADER_ACCEPT_ENCODING), "gzip") {
 			return
 		}
@@ -78,7 +78,7 @@ func Gzip(options ...Options) flamego.Handler {
 
 		// delete content length after we know we have been written to
 		gzw.Header().Del("Content-Length")
-	}
+	})
 }
 
 type gzipResponseWriter struct {
