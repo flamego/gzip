@@ -17,7 +17,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Gzip(t *testing.T) {
+func TestGzip(t *testing.T) {
 	t.Run("Gzip response content", func(t *testing.T) {
 		before := false
 
@@ -75,7 +75,7 @@ func (h *hijackableResponse) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return nil, nil, nil
 }
 
-func Test_ResponseWriter_Hijack(t *testing.T) {
+func TestResponseWriterHijack(t *testing.T) {
 	t.Run("Hijack response", func(t *testing.T) {
 		hijackable := newHijackableResponse()
 
