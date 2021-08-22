@@ -6,13 +6,13 @@ package gzip
 
 import (
 	"bufio"
+	"compress/gzip"
 	"fmt"
 	"net"
 	"net/http"
 	"strings"
 
 	"github.com/flamego/flamego"
-	"github.com/klauspost/compress/gzip"
 )
 
 const (
@@ -24,14 +24,14 @@ const (
 
 // Options represents a struct for specifying configuration options for the GZip middleware.
 type Options struct {
-	// Compression level. Can be DefaultCompression(-1), ConstantCompression(-2)
+	// Compression level. Can be DefaultCompression(-1), NoCompression(0)
 	// or any integer value between BestSpeed(1) and BestCompression(9) inclusive.
 	CompressionLevel int
 }
 
 func isCompressionLevelValid(level int) bool {
 	return level == gzip.DefaultCompression ||
-		level == gzip.ConstantCompression ||
+		level == gzip.NoCompression ||
 		(level >= gzip.BestSpeed && level <= gzip.BestCompression)
 }
 
