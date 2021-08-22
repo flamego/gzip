@@ -13,8 +13,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/flamego/flamego"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/flamego/flamego"
 )
 
 func TestGzip(t *testing.T) {
