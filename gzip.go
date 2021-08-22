@@ -59,7 +59,7 @@ func Gzip(options ...Options) flamego.Handler {
 		headers.Set(headerContentEncoding, "gzip")
 		headers.Set(headerVary, headerAcceptEncoding)
 
-		// We've made sure compression level is valid in prepareGzipOptions,
+		// We've made sure compression level is valid in prepareOptions,
 		// no need to check same error again.
 		gz, err := gzip.NewWriterLevel(ctx.ResponseWriter(), opt.CompressionLevel)
 		if err != nil {
