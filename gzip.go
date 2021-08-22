@@ -62,7 +62,7 @@ func Gzip(options ...Options) flamego.Handler {
 		// no need to check same error again.
 		gz, err := gzip.NewWriterLevel(ctx.ResponseWriter(), opt.CompressionLevel)
 		if err != nil {
-			panic(err.Error())
+			panic("gzip: " + err.Error())
 		}
 		defer gz.Close()
 
