@@ -16,10 +16,10 @@ import (
 )
 
 const (
-	_HEADER_ACCEPT_ENCODING  = "Accept-Encoding"
-	_HEADER_CONTENT_ENCODING = "Content-Encoding"
-	_HEADER_CONTENT_TYPE     = "Content-Type"
-	_HEADER_VARY             = "Vary"
+	headerAcceptEncoding  = "Accept-Encoding"
+	headerContentEncoding = "Content-Encoding"
+	headerContentType     = "Content-Type"
+	headerVary            = "Vary"
 )
 
 // Options represents a struct for specifying configuration options for the GZip middleware.
@@ -55,13 +55,13 @@ func Gzip(options ...Options) flamego.Handler {
 	opt := prepareOptions(options)
 
 	return flamego.ContextInvoker(func(ctx flamego.Context) {
-		if !strings.Contains(ctx.Request().Header.Get(_HEADER_ACCEPT_ENCODING), "gzip") {
+		if !strings.Contains(ctx.Request().Header.Get(headerAcceptEncoding), "gzip") {
 			return
 		}
 
 		headers := ctx.ResponseWriter().Header()
-		headers.Set(_HEADER_CONTENT_ENCODING, "gzip")
-		headers.Set(_HEADER_VARY, _HEADER_ACCEPT_ENCODING)
+		headers.Set(headerContentEncoding, "gzip")
+		headers.Set(headerVary, headerAcceptEncoding)
 
 		// We've made sure compression level is valid in prepareGzipOptions,
 		// no need to check same error again.
@@ -87,8 +87,8 @@ type gzipResponseWriter struct {
 }
 
 func (grw gzipResponseWriter) Write(p []byte) (int, error) {
-	if len(grw.Header().Get(_HEADER_CONTENT_TYPE)) == 0 {
-		grw.Header().Set(_HEADER_CONTENT_TYPE, http.DetectContentType(p))
+	if len(grw.Header().Get(headerContentType)) == 0 {
+		grw.Header().Set(headerContentType, http.DetectContentType(p))
 	}
 	return grw.w.Write(p)
 }

@@ -36,21 +36,21 @@ func TestGzip(t *testing.T) {
 		assert.Nil(t, err)
 		f.ServeHTTP(resp, req)
 
-		_, ok := resp.Result().Header[_HEADER_CONTENT_ENCODING]
+		_, ok := resp.Result().Header[headerContentEncoding]
 		assert.False(t, ok)
 
-		ce := resp.Header().Get(_HEADER_CONTENT_ENCODING)
+		ce := resp.Header().Get(headerContentEncoding)
 		assert.False(t, strings.EqualFold(ce, "gzip"))
 
 		// Gzip now.
 		resp = httptest.NewRecorder()
-		req.Header.Set(_HEADER_ACCEPT_ENCODING, "gzip")
+		req.Header.Set(headerAcceptEncoding, "gzip")
 		f.ServeHTTP(resp, req)
 
-		_, ok = resp.Result().Header[_HEADER_CONTENT_ENCODING]
+		_, ok = resp.Result().Header[headerContentEncoding]
 		assert.True(t, ok)
 
-		ce = resp.Header().Get(_HEADER_CONTENT_ENCODING)
+		ce = resp.Header().Get(headerContentEncoding)
 		assert.True(t, strings.EqualFold(ce, "gzip"))
 
 		assert.True(t, before)
@@ -92,7 +92,7 @@ func TestResponseWriterHijack(t *testing.T) {
 		r, err := http.NewRequest("GET", "/", nil)
 		assert.Nil(t, err)
 
-		r.Header.Set(_HEADER_ACCEPT_ENCODING, "gzip")
+		r.Header.Set(headerAcceptEncoding, "gzip")
 		f.ServeHTTP(hijackable, r)
 
 		assert.True(t, hijackable.Hijacked)
