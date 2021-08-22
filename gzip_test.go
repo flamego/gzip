@@ -22,7 +22,7 @@ func Test_Gzip(t *testing.T) {
 		before := false
 
 		f := flamego.NewWithLogger(&bytes.Buffer{})
-		f.Use(Gziper(Options{-10}))
+		f.Use(Gzip(Options{-10}))
 		f.Use(func(r http.ResponseWriter) {
 			r.(flamego.ResponseWriter).Before(func(rw flamego.ResponseWriter) {
 				before = true
@@ -80,7 +80,7 @@ func Test_ResponseWriter_Hijack(t *testing.T) {
 		hijackable := newHijackableResponse()
 
 		f := flamego.NewWithLogger(&bytes.Buffer{})
-		f.Use(Gziper())
+		f.Use(Gzip())
 		f.Use(func(rw http.ResponseWriter) {
 			hj, ok := rw.(http.Hijacker)
 			assert.True(t, ok)

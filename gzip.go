@@ -48,10 +48,10 @@ func prepareOptions(options []Options) Options {
 	return opt
 }
 
-// Gziper returns a Handler that adds gzip compression to all requests.
+// Gzip returns a Handler that adds gzip compression to all requests.
 // Make sure to include the Gzip middleware above other middleware
 // that alter the response body (like the render middleware).
-func Gziper(options ...Options) flamego.Handler {
+func Gzip(options ...Options) flamego.Handler {
 	opt := prepareOptions(options)
 
 	return func(ctx flamego.Context) {
