@@ -27,7 +27,7 @@ import (
 func main() {
 	f := flamego.Classic()
 	f.Use(gzip.Gzip())
-	f.Get("/", func(c flamego.Context) string {
+	f.Get("/", func() string {
 		return "ok"
 	})
 	f.Run()
