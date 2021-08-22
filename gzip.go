@@ -5,11 +5,7 @@
 package gzip
 
 import (
-	"bufio"
 	"compress/gzip"
-	"fmt"
-	"net"
-	"net/http"
 	"strings"
 
 	"github.com/flamego/flamego"
@@ -71,32 +67,9 @@ func Gzip(options ...Options) flamego.Handler {
 		}
 		defer gz.Close()
 
-		gzw := gzipResponseWriter{gz, ctx.ResponseWriter()}
-		ctx.MapTo(gzw, (*http.ResponseWriter)(nil))
-
 		ctx.Next()
 
 		// delete content length after we know we have been written to
-		gzw.Header().Del("Content-Length")
+		ctx.ResponseWriter().Header().Del("Content-Length")
 	})
-}
-
-type gzipResponseWriter struct {
-	w *gzip.Writer
-	flamego.ResponseWriter
-}
-
-func (grw gzipResponseWriter) Write(p []byte) (int, error) {
-	if len(grw.Header().Get(headerContentType)) == 0 {
-		grw.Header().Set(headerContentType, http.DetectContentType(p))
-	}
-	return grw.w.Write(p)
-}
-
-func (grw gzipResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-	hijacker, ok := grw.ResponseWriter.(http.Hijacker)
-	if !ok {
-		return nil, nil, fmt.Errorf("the ResponseWriter doesn't support the Hijacker interface")
-	}
-	return hijacker.Hijack()
 }
