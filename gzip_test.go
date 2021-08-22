@@ -19,43 +19,41 @@ import (
 )
 
 func TestGzip(t *testing.T) {
-	t.Run("Gzip response content", func(t *testing.T) {
-		before := false
+	before := false
 
-		f := flamego.NewWithLogger(&bytes.Buffer{})
-		f.Use(Gzip(Options{-10}))
-		f.Use(func(r http.ResponseWriter) {
-			r.(flamego.ResponseWriter).Before(func(rw flamego.ResponseWriter) {
-				before = true
-			})
+	f := flamego.NewWithLogger(&bytes.Buffer{})
+	f.Use(Gzip(Options{-10}))
+	f.Use(func(r http.ResponseWriter) {
+		r.(flamego.ResponseWriter).Before(func(rw flamego.ResponseWriter) {
+			before = true
 		})
-		f.Get("/", func() string { return "hello wolrd!" })
-
-		// Not yet gzip.
-		resp := httptest.NewRecorder()
-		req, err := http.NewRequest("GET", "/", nil)
-		assert.Nil(t, err)
-		f.ServeHTTP(resp, req)
-
-		_, ok := resp.Result().Header[headerContentEncoding]
-		assert.False(t, ok)
-
-		ce := resp.Header().Get(headerContentEncoding)
-		assert.False(t, strings.EqualFold(ce, "gzip"))
-
-		// Gzip now.
-		resp = httptest.NewRecorder()
-		req.Header.Set(headerAcceptEncoding, "gzip")
-		f.ServeHTTP(resp, req)
-
-		_, ok = resp.Result().Header[headerContentEncoding]
-		assert.True(t, ok)
-
-		ce = resp.Header().Get(headerContentEncoding)
-		assert.True(t, strings.EqualFold(ce, "gzip"))
-
-		assert.True(t, before)
 	})
+	f.Get("/", func() string { return "hello wolrd!" })
+
+	// Not yet gzip.
+	resp := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", "/", nil)
+	assert.Nil(t, err)
+	f.ServeHTTP(resp, req)
+
+	_, ok := resp.Result().Header[headerContentEncoding]
+	assert.False(t, ok)
+
+	ce := resp.Header().Get(headerContentEncoding)
+	assert.False(t, strings.EqualFold(ce, "gzip"))
+
+	// Gzip now.
+	resp = httptest.NewRecorder()
+	req.Header.Set(headerAcceptEncoding, "gzip")
+	f.ServeHTTP(resp, req)
+
+	_, ok = resp.Result().Header[headerContentEncoding]
+	assert.True(t, ok)
+
+	ce = resp.Header().Get(headerContentEncoding)
+	assert.True(t, strings.EqualFold(ce, "gzip"))
+
+	assert.True(t, before)
 }
 
 type hijackableResponse struct {
@@ -77,25 +75,23 @@ func (h *hijackableResponse) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 
 func TestResponseWriterHijack(t *testing.T) {
-	t.Run("Hijack response", func(t *testing.T) {
-		hijackable := newHijackableResponse()
+	hijackable := newHijackableResponse()
 
-		f := flamego.NewWithLogger(&bytes.Buffer{})
-		f.Use(Gzip())
-		f.Use(func(rw http.ResponseWriter) {
-			hj, ok := rw.(http.Hijacker)
-			assert.True(t, ok)
+	f := flamego.NewWithLogger(&bytes.Buffer{})
+	f.Use(Gzip())
+	f.Use(func(rw http.ResponseWriter) {
+		hj, ok := rw.(http.Hijacker)
+		assert.True(t, ok)
 
-			_, _, err := hj.Hijack()
-			assert.Nil(t, err)
-		})
-
-		r, err := http.NewRequest("GET", "/", nil)
+		_, _, err := hj.Hijack()
 		assert.Nil(t, err)
-
-		r.Header.Set(headerAcceptEncoding, "gzip")
-		f.ServeHTTP(hijackable, r)
-
-		assert.True(t, hijackable.Hijacked)
 	})
+
+	r, err := http.NewRequest("GET", "/", nil)
+	assert.Nil(t, err)
+
+	r.Header.Set(headerAcceptEncoding, "gzip")
+	f.ServeHTTP(hijackable, r)
+
+	assert.True(t, hijackable.Hijacked)
 }
