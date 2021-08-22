@@ -14,7 +14,6 @@ import (
 const (
 	headerAcceptEncoding  = "Accept-Encoding"
 	headerContentEncoding = "Content-Encoding"
-	headerContentType     = "Content-Type"
 	headerVary            = "Vary"
 )
 
