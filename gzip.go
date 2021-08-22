@@ -69,7 +69,7 @@ func Gzip(options ...Options) flamego.Handler {
 
 		ctx.Next()
 
-		// delete content length after we know we have been written to
+		// Delete content length after we know we have been written to
 		ctx.ResponseWriter().Header().Del("Content-Length")
 	})
 }
