@@ -24,7 +24,8 @@ const (
 // Options represents a struct for specifying configuration options for the gzip
 // middleware.
 type Options struct {
-	// CompressionLevel indicates the compression level. Default is 4.
+	// CompressionLevel indicates the compression level, possible values are between
+	// 0 to 9 (from no compression to best compression). Default is 4.
 	CompressionLevel int
 }
 
