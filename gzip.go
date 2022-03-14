@@ -5,10 +5,14 @@
 package gzip
 
 import (
+	"bufio"
 	"compress/gzip"
+	"net"
+	"net/http"
 	"strings"
 
 	"github.com/flamego/flamego"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -17,10 +21,10 @@ const (
 	headerVary            = "Vary"
 )
 
-// Options represents a struct for specifying configuration options for the GZip middleware.
+// Options represents a struct for specifying configuration options for the gzip
+// middleware.
 type Options struct {
-	// Compression level. Can be DefaultCompression(-1), NoCompression(0)
-	// or any integer value between BestSpeed(1) and BestCompression(9) inclusive.
+	// CompressionLevel indicates the compression level. Default is 4.
 	CompressionLevel int
 }
 
@@ -43,9 +47,9 @@ func prepareOptions(options []Options) Options {
 	return opt
 }
 
-// Gzip returns a Handler that adds gzip compression to all requests.
-// Make sure to include the Gzip middleware above other middleware
-// that alter the response body (like the render middleware).
+// Gzip returns a Handler that adds gzip compression to all requests. Make sure
+// to include the gzip middleware above other middleware that alter the response
+// body (like the render middleware).
 func Gzip(options ...Options) flamego.Handler {
 	opt := prepareOptions(options)
 
@@ -64,11 +68,35 @@ func Gzip(options ...Options) flamego.Handler {
 		if err != nil {
 			panic("gzip: " + err.Error())
 		}
-		defer gz.Close()
+		defer func() { _ = gz.Close() }()
 
+		w := &responseWriter{
+			writer:         gz,
+			ResponseWriter: ctx.ResponseWriter(),
+		}
+		ctx.MapTo(w, (*http.ResponseWriter)(nil))
 		ctx.Next()
 
 		// Delete content length after we know we have been written to
 		ctx.ResponseWriter().Header().Del("Content-Length")
 	})
+}
+
+type responseWriter struct {
+	writer *gzip.Writer
+	flamego.ResponseWriter
+}
+
+func (w *responseWriter) Write(p []byte) (int, error) {
+	return w.writer.Write(p)
+}
+
+var _ http.Hijacker = (*responseWriter)(nil)
+
+func (w *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	hijacker, ok := w.ResponseWriter.(http.Hijacker)
+	if !ok {
+		return nil, nil, errors.New("the ResponseWriter doesn't support the Hijacker interface")
+	}
+	return hijacker.Hijack()
 }
