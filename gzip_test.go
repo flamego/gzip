@@ -34,7 +34,7 @@ func TestGzip(t *testing.T) {
 
 	// Not accepting gzip
 	resp := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/", nil)
+	req, err := http.NewRequest(http.MethodGet, "/", nil)
 	require.NoError(t, err)
 
 	f.ServeHTTP(resp, req)
@@ -91,7 +91,7 @@ func TestResponseWriterHijack(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	r, err := http.NewRequest("GET", "/", nil)
+	r, err := http.NewRequest(http.MethodGet, "/", nil)
 	require.NoError(t, err)
 
 	r.Header.Set(headerAcceptEncoding, "gzip")
