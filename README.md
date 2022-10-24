@@ -9,7 +9,7 @@ Package gzip is a middleware that provides gzip compression to responses for [Fl
 
 ## Installation
 
-The minimum requirement of Go is **1.16**.
+The minimum requirement of Go is **1.18**.
 
     go get github.com/flamego/gzip
 
